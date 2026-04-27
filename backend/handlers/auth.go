@@ -22,15 +22,17 @@ import (
 	"gorm.io/gorm"
 )
 
-func getBasaltBaseURL() string      { return getEnv("BASALT_BASE_URL", "http://localhost:8101") }
-func getClientID() string           { return getEnv("BASALT_CLIENT_ID", "") }
-func getClientSecret() string       { return getEnv("BASALT_CLIENT_SECRET", "") }
-func getRedirectURI() string        { return getEnv("BASALT_REDIRECT_URI", "http://localhost:8113/api/auth/callback") }
-func getFrontendURL() string        { return getEnv("FRONTEND_URL", "http://localhost:5116") }
-func getSessionCookieName() string  { return getEnv("SESSION_COOKIE_NAME", "postcube_session") }
-func getJwtSecret() []byte          { return []byte(getEnv("JWT_SECRET", "change-this-postcube-jwt-secret")) }
-func getCookieDomain() string       { return getEnv("COOKIE_DOMAIN", "") }
-func getCookieSecure() bool         { return strings.EqualFold(getEnv("COOKIE_SECURE", "false"), "true") }
+func getBasaltBaseURL() string { return getEnv("BASALT_BASE_URL", "http://localhost:8101") }
+func getClientID() string      { return getEnv("BASALT_CLIENT_ID", "") }
+func getClientSecret() string  { return getEnv("BASALT_CLIENT_SECRET", "") }
+func getRedirectURI() string {
+	return getEnv("BASALT_REDIRECT_URI", "http://localhost:8113/api/auth/callback")
+}
+func getFrontendURL() string       { return getEnv("FRONTEND_URL", "http://localhost:5116") }
+func getSessionCookieName() string { return getEnv("SESSION_COOKIE_NAME", "postcube_session") }
+func getJwtSecret() []byte         { return []byte(getEnv("JWT_SECRET", "change-this-postcube-jwt-secret")) }
+func getCookieDomain() string      { return getEnv("COOKIE_DOMAIN", "") }
+func getCookieSecure() bool        { return strings.EqualFold(getEnv("COOKIE_SECURE", "false"), "true") }
 
 func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
