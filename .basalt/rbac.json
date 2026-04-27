@@ -1,0 +1,23 @@
+{
+  "permissions": [
+    {
+      "permission_key": "postcube.user",
+      "name": "Postcube User",
+      "description": "Manage own question box and inbox."
+    }
+  ],
+  "roles": [
+    {
+      "role_key": "postcube_user",
+      "name": "Postcube User",
+      "description": "Default Postcube role for authenticated users."
+    }
+  ],
+  "role_permissions": [
+    {
+      "role_key": "postcube_user",
+      "permission_key": "postcube.user",
+      "effect": "allow"
+    }
+  ]
+}

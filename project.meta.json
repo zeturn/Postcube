@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0.0",
+  "metadata_type": "project_meta",
+  "project": {
+    "name": "Postcube",
+    "display_name": "Postcube",
+    "description": "BasaltPass-integrated anonymous question box with public feed and private inbox.",
+    "root_path": "/workspaces/WorkPlace/Postcube",
+    "local_path": "C:/Users/Administrator/Desktop/WorkPlace/Postcube"
+  },
+  "stack": {
+    "frontend": [
+      "React",
+      "TypeScript",
+      "Vite",
+      "Tailwind CSS"
+    ],
+    "backend": [
+      "Go",
+      "Fiber",
+      "GORM",
+      "SQLite"
+    ],
+    "auth": [
+      "BasaltPass OAuth2 PKCE",
+      "JWT session cookie"
+    ]
+  },
+  "features": {
+    "question_box": [
+      "Public anonymous question submission",
+      "Public answered and pending feed",
+      "Private inbox for answer/delete",
+      "Per-question background color"
+    ],
+    "basaltpass_integration": {
+      "record_name": "Postcube OAuth Client",
+      "callback_url": "http://localhost:8113/api/auth/callback",
+      "frontend_url": "http://localhost:5116"
+    }
+  },
+  "service_ports": [
+    {
+      "service": "backend_api",
+      "port": 8113,
+      "protocol": "http",
+      "url": "http://localhost:8113"
+    },
+    {
+      "service": "frontend_dev",
+      "port": 5116,
+      "protocol": "http",
+      "url": "http://localhost:5116"
+    }
+  ],
+  "health_checks": [
+    {
+      "service": "backend_api",
+      "kind": "liveness",
+      "path": "/api/health",
+      "url": "http://localhost:8113/api/health"
+    }
+  ],
+  "commands": {
+    "backend_dev": "cd backend && go run .",
+    "frontend_dev": "cd frontend && npm run dev",
+    "frontend_build": "cd frontend && npm run build"
+  }
+}

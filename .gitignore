@@ -1,0 +1,26 @@
+__pycache__/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Python
+*.pyc
+
+# Node / frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Go / backend
+*.exe
+*.out
+backend/postcube.db
+backend/*.db
+
+# Local env / secrets
+.env
+backend/.env
+frontend/.env
+frontend/.env.local
