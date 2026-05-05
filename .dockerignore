@@ -1,0 +1,17 @@
+.git
+.gitignore
+Dockerfile
+README.md
+project.meta.json
+register_postcube.py
+__pycache__/
+*.pyc
+
+frontend/node_modules
+frontend/dist
+frontend/.env
+frontend/.env.local
+
+backend/.env
+backend/*.db
+backend/postcube.db

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -62,6 +63,8 @@ func main() {
 	api.Patch("/inbox/questions/:id", handlers.UpdateInboxQuestion)
 	api.Delete("/inbox/questions/:id", handlers.DeleteInboxQuestion)
 
+	serveFrontend(app)
+
 	port := getEnv("PORT", "8113")
 	if !strings.HasPrefix(port, ":") {
 		port = ":" + port
@@ -76,4 +79,24 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func serveFrontend(app *fiber.App) {
+	publicDir := getEnv("PUBLIC_DIR", "")
+	if strings.TrimSpace(publicDir) == "" {
+		publicDir = filepath.Join("..", "frontend", "dist")
+	}
+	indexPath := filepath.Join(publicDir, "index.html")
+	if _, err := os.Stat(indexPath); err != nil {
+		log.Printf("frontend assets not found at %s; serving API only", publicDir)
+		return
+	}
+
+	app.Static("/", publicDir)
+	app.Get("*", func(c *fiber.Ctx) error {
+		if strings.HasPrefix(c.Path(), "/api/") {
+			return fiber.ErrNotFound
+		}
+		return c.SendFile(indexPath)
+	})
 }
