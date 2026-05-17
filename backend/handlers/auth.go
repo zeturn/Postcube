@@ -54,7 +54,7 @@ func generatePKCE() (verifier string, challenge string) {
 	return
 }
 
-func setOAuthCookies(c *fiber.Ctx, state, verifier string) {
+func setOAuthCookies(c *fiber.Ctx, state, verifier, nonce string) {
 	expires := time.Now().Add(10 * time.Minute)
 	secure := getCookieSecure()
 	domain := getCookieDomain()
@@ -72,6 +72,16 @@ func setOAuthCookies(c *fiber.Ctx, state, verifier string) {
 	c.Cookie(&fiber.Cookie{
 		Name:     "postcube_oauth_verifier",
 		Value:    verifier,
+		Expires:  expires,
+		HTTPOnly: true,
+		Secure:   secure,
+		SameSite: "Lax",
+		Path:     "/",
+		Domain:   domain,
+	})
+	c.Cookie(&fiber.Cookie{
+		Name:     "postcube_oauth_nonce",
+		Value:    nonce,
 		Expires:  expires,
 		HTTPOnly: true,
 		Secure:   secure,
@@ -106,6 +116,16 @@ func clearOAuthCookies(c *fiber.Ctx) {
 		Path:     "/",
 		Domain:   domain,
 	})
+	c.Cookie(&fiber.Cookie{
+		Name:     "postcube_oauth_nonce",
+		Value:    "",
+		Expires:  expires,
+		HTTPOnly: true,
+		Secure:   secure,
+		SameSite: "Lax",
+		Path:     "/",
+		Domain:   domain,
+	})
 }
 
 func redirectWithAuthError(c *fiber.Ctx, code string) error {
@@ -118,14 +138,16 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	state := generateRandomString(16)
+	nonce := generateRandomString(16)
 	verifier, challenge := generatePKCE()
-	setOAuthCookies(c, state, verifier)
+	setOAuthCookies(c, state, verifier, nonce)
 
 	params := url.Values{}
 	params.Set("client_id", getClientID())
 	params.Set("redirect_uri", getRedirectURI())
 	params.Set("response_type", "code")
 	params.Set("state", state)
+	params.Set("nonce", nonce)
 	params.Set("code_challenge", challenge)
 	params.Set("code_challenge_method", "S256")
 	params.Set("scope", "openid profile email")
@@ -139,6 +161,7 @@ func Callback(c *fiber.Ctx) error {
 	state := strings.TrimSpace(c.Query("state"))
 	storedState := c.Cookies("postcube_oauth_state")
 	verifier := c.Cookies("postcube_oauth_verifier")
+	expectedNonce := c.Cookies("postcube_oauth_nonce")
 
 	if code == "" || state == "" || storedState == "" || verifier == "" || storedState != state {
 		clearOAuthCookies(c)
@@ -173,10 +196,17 @@ func Callback(c *fiber.Ctx) error {
 
 	var tokens struct {
 		AccessToken string `json:"access_token"`
+		IDToken     string `json:"id_token"`
 	}
 	if err := json.NewDecoder(tokenResp.Body).Decode(&tokens); err != nil || strings.TrimSpace(tokens.AccessToken) == "" {
 		clearOAuthCookies(c)
 		return redirectWithAuthError(c, "token_exchange_failed")
+	}
+	if strings.TrimSpace(tokens.IDToken) != "" {
+		if err := validateIDTokenNonce(tokens.IDToken, expectedNonce); err != nil {
+			clearOAuthCookies(c)
+			return redirectWithAuthError(c, "invalid_nonce")
+		}
 	}
 
 	uiReq, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/v1/oauth/userinfo", getBasaltBaseURL()), nil)
@@ -289,6 +319,21 @@ func Callback(c *fiber.Ctx) error {
 
 	clearOAuthCookies(c)
 	return c.Redirect(getFrontendURL()+"/inbox", fiber.StatusFound)
+}
+
+func validateIDTokenNonce(idToken, expectedNonce string) error {
+	if expectedNonce == "" {
+		return errors.New("missing expected nonce")
+	}
+	claims := jwt.MapClaims{}
+	parser := jwt.NewParser()
+	if _, _, err := parser.ParseUnverified(idToken, claims); err != nil {
+		return err
+	}
+	if nonce, _ := claims["nonce"].(string); nonce != expectedNonce {
+		return errors.New("nonce mismatch")
+	}
+	return nil
 }
 
 func Logout(c *fiber.Ctx) error {
