@@ -49,7 +49,7 @@ Postcube/
 ```powershell
 cd backend
 cp .env.example .env
-# fill BASALT_CLIENT_ID / BASALT_CLIENT_SECRET / JWT_SECRET
+# fill BASALTPASS_CLIENT_ID / BASALTPASS_CLIENT_SECRET / JWT_SECRET
 
 go mod tidy
 go run .
@@ -81,7 +81,7 @@ Use the helper script (requires your tenant API key):
 
 ```powershell
 cd Postcube
-$env:BASALT_API_KEY="your_api_key"
+$env:BASALTPASS_API_KEY="your_api_key"
 python register_postcube.py
 ```
 
@@ -89,7 +89,7 @@ The script creates:
 - app record (`Postcube`)
 - OAuth client for callback `http://localhost:8113/api/auth/callback`
 
-It prints generated `BASALT_CLIENT_ID` and `BASALT_CLIENT_SECRET` for `backend/.env`.
+It prints generated `BASALTPASS_CLIENT_ID` and `BASALTPASS_CLIENT_SECRET` for `backend/.env`.
 
 ## Git Ready
 

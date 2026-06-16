@@ -4,16 +4,16 @@ import sys
 import urllib.error
 import urllib.request
 
-BASE_URL = os.getenv("BASALT_BASE_URL", "http://localhost:8101")
+BASE_URL = os.getenv("BASALTPASS_BASE_URL") or os.getenv("BASALT_BASE_URL", "http://localhost:8101")
 API_BASE = f"{BASE_URL}/api/v1/manual"
-API_KEY = os.getenv("BASALT_API_KEY", "").strip()
+API_KEY = (os.getenv("BASALTPASS_API_KEY") or os.getenv("BASALT_API_KEY", "")).strip()
 
 FRONTEND_URL = os.getenv("POSTCUBE_FRONTEND_URL", "http://localhost:5116")
 BACKEND_URL = os.getenv("POSTCUBE_BACKEND_URL", "http://localhost:8113")
 CALLBACK_URL = f"{BACKEND_URL}/api/auth/callback"
 
 if not API_KEY:
-    print("ERROR: BASALT_API_KEY is required.")
+    print("ERROR: BASALTPASS_API_KEY is required.")
     sys.exit(1)
 
 headers = {
@@ -62,8 +62,8 @@ if existing_oauth_clients:
     print("App creation already returned an OAuth client.")
     print("\n" + "=" * 60)
     print("Add these values to Postcube/backend/.env")
-    print(f"BASALT_CLIENT_ID={client_id}")
-    print(f"BASALT_CLIENT_SECRET={client_secret}")
+    print(f"BASALTPASS_CLIENT_ID={client_id}")
+    print(f"BASALTPASS_CLIENT_SECRET={client_secret}")
     print("=" * 60)
     sys.exit(0)
 
@@ -84,6 +84,6 @@ client_secret = oauth_resp.get("data", {}).get("client_secret")
 
 print("\n" + "=" * 60)
 print("Add these values to Postcube/backend/.env")
-print(f"BASALT_CLIENT_ID={client_id}")
-print(f"BASALT_CLIENT_SECRET={client_secret}")
+print(f"BASALTPASS_CLIENT_ID={client_id}")
+print(f"BASALTPASS_CLIENT_SECRET={client_secret}")
 print("=" * 60)

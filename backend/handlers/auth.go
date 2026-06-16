@@ -22,11 +22,15 @@ import (
 	"gorm.io/gorm"
 )
 
-func getBasaltBaseURL() string { return getEnv("BASALT_BASE_URL", "http://localhost:8101") }
-func getClientID() string      { return getEnv("BASALT_CLIENT_ID", "") }
-func getClientSecret() string  { return getEnv("BASALT_CLIENT_SECRET", "") }
+func getBasaltBaseURL() string {
+	return getEnvAny([]string{"BASALTPASS_BASE_URL", "BASALT_BASE_URL"}, "http://localhost:8101")
+}
+func getClientID() string { return getEnvAny([]string{"BASALTPASS_CLIENT_ID", "BASALT_CLIENT_ID"}, "") }
+func getClientSecret() string {
+	return getEnvAny([]string{"BASALTPASS_CLIENT_SECRET", "BASALT_CLIENT_SECRET"}, "")
+}
 func getRedirectURI() string {
-	return getEnv("BASALT_REDIRECT_URI", "http://localhost:8113/api/auth/callback")
+	return getEnvAny([]string{"BASALTPASS_REDIRECT_URI", "BASALT_REDIRECT_URI"}, "http://localhost:8113/api/auth/callback")
 }
 func getFrontendURL() string       { return getEnv("FRONTEND_URL", "http://localhost:5116") }
 func getSessionCookieName() string { return getEnv("SESSION_COOKIE_NAME", "postcube_session") }
@@ -37,6 +41,15 @@ func getCookieSecure() bool        { return strings.EqualFold(getEnv("COOKIE_SEC
 func getEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value
+	}
+	return fallback
+}
+
+func getEnvAny(keys []string, fallback string) string {
+	for _, key := range keys {
+		if value, ok := os.LookupEnv(key); ok {
+			return value
+		}
 	}
 	return fallback
 }
@@ -134,7 +147,7 @@ func redirectWithAuthError(c *fiber.Ctx, code string) error {
 
 func Login(c *fiber.Ctx) error {
 	if strings.TrimSpace(getClientID()) == "" {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "BASALT_CLIENT_ID is not configured"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "BASALTPASS_CLIENT_ID is not configured"})
 	}
 
 	state := generateRandomString(16)
