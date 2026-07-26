@@ -2,6 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fetchPublicBox, submitQuestion, type PublicBoxResponse } from '../api/client'
 import { useAuth } from '../hooks/useAuth'
+import Button from '../components/ui/Button'
+import Input from '../components/ui/Input'
+import Textarea from '../components/ui/Textarea'
+import Card from '../components/ui/Card'
 
 export default function PublicBoxPage() {
   const { slug = '' } = useParams()
@@ -94,52 +98,47 @@ export default function PublicBoxPage() {
       </header>
 
       {loading && (
-        <div className="rounded-2xl border border-ink-100 bg-white p-6 text-sm text-ink-500 card-shadow">Loading box...</div>
+        <Card className="!p-6 bg-white text-sm text-ink-500">Loading box...</Card>
       )}
 
       {!loading && error && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700 card-shadow">{error}</div>
+        <Card className="!p-6 border-red-200 bg-red-50 text-sm text-red-700">{error}</Card>
       )}
 
       {!loading && data && (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
           <section className="space-y-4">
-            <div className="rounded-2xl border border-ink-100 bg-white p-5 card-shadow">
+            <Card className="!p-5 bg-white">
               <h2 className="text-lg font-bold text-ink-800">Ask anonymously</h2>
               <form className="mt-4 space-y-3" onSubmit={onSubmit}>
-                <input
+                <Input
                   value={anonymousName}
                   onChange={(e) => setAnonymousName(e.target.value)}
-                  className="w-full rounded-xl border border-ink-200 px-3 py-2 text-sm outline-none focus:border-brand-500"
                   placeholder="Display name (optional)"
                   maxLength={24}
                 />
-                <textarea
+                <Textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="h-36 w-full resize-none rounded-xl border border-ink-200 px-3 py-2 text-sm outline-none focus:border-brand-500"
+                  rows={6}
                   placeholder="Type your anonymous question..."
                   maxLength={500}
                 />
-                <button
-                  disabled={submitting}
-                  className="h-11 w-full cursor-pointer rounded-xl bg-brand-500 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
-                  type="submit"
-                >
+                <Button variant="brand" fullWidth type="submit" disabled={submitting}>
                   {submitting ? 'Sending...' : 'Send Question'}
-                </button>
+                </Button>
               </form>
               {submitMessage && <p className="mt-3 text-sm text-ink-500">{submitMessage}</p>}
-            </div>
+            </Card>
 
-            <div className="rounded-2xl border border-ink-100 bg-white p-5 card-shadow">
+            <Card className="!p-5 bg-white">
               <p className="text-sm text-ink-500">Total posts</p>
               <p className="mt-1 text-3xl font-bold text-ink-800">{totalCount}</p>
               <div className="mt-4 flex gap-2 text-xs">
                 <span className="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700">Answered: {data.answered.length}</span>
                 <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-700">Pending: {data.unanswered.length}</span>
               </div>
-            </div>
+            </Card>
           </section>
 
           <section className="space-y-4">
@@ -170,9 +169,9 @@ export default function PublicBoxPage() {
             ))}
 
             {totalCount === 0 && (
-              <div className="rounded-2xl border border-ink-100 bg-white p-6 text-sm text-ink-500 card-shadow">
+              <Card className="!p-6 bg-white text-center text-sm text-ink-500">
                 No questions yet. Be the first to post one.
-              </div>
+              </Card>
             )}
           </section>
         </div>

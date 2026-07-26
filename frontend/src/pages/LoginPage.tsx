@@ -1,4 +1,5 @@
 import { useAuth } from '../hooks/useAuth'
+import Button from '../components/ui/Button'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -23,12 +24,9 @@ export default function LoginPage() {
             <h2 className="text-3xl font-bold text-ink-800">Sign in</h2>
             <p className="mt-2 text-ink-500">Use your BasaltPass account to manage your question box.</p>
 
-            <button
-              onClick={login}
-              className="mt-8 inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-ink-800 px-5 text-sm font-semibold text-white transition hover:bg-ink-700"
-            >
+            <Button variant="dark" fullWidth className="mt-8" onClick={login}>
               Continue with BasaltPass
-            </button>
+            </Button>
 
             <div className="mt-8 rounded-xl border border-ink-100 bg-ink-50 p-4 text-sm text-ink-600">
               New users are auto-provisioned with a unique question box URL after OAuth callback.

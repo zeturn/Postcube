@@ -10,9 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@zeturn/watercolor-core": "^1.2.8",
+    "@zeturn/watercolor-icons-lucide-react": "^1.2.8",
+    "@zeturn/watercolor-react": "^1.2.8",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-router-dom": "^7.14.2"
+    "react-router-dom": "^7.14.2",
+    "watercolor-ui": "^1.2.8"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

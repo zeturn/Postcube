@@ -10,6 +10,10 @@ import {
   type Question,
 } from '../api/client'
 import { useAuth } from '../hooks/useAuth'
+import Button from '../components/ui/Button'
+import Input from '../components/ui/Input'
+import Textarea from '../components/ui/Textarea'
+import Card from '../components/ui/Card'
 
 const presetColors = ['#fff4d6', '#ffe2ec', '#e4f8e9', '#e5f2ff', '#f3e8ff', '#f5f1e8']
 
@@ -163,60 +167,57 @@ export default function InboxPage() {
       {error && <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
       {loading && (
-        <div className="rounded-2xl border border-ink-100 bg-white p-6 text-sm text-ink-500 card-shadow">Loading inbox...</div>
+        <Card className="!p-6 bg-white text-sm text-ink-500">Loading inbox...</Card>
       )}
 
       {!loading && box && (
         <>
           <section className="mb-6 grid gap-4 md:grid-cols-4">
-            <div className="rounded-2xl border border-ink-100 bg-white p-4 card-shadow md:col-span-2">
+            <Card className="!p-4 bg-white md:col-span-2">
               <label className="text-xs font-semibold tracking-wide text-ink-500">Box title</label>
               <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-                <input
+                <Input
                   value={draftTitle}
                   onChange={(e) => setDraftTitle(e.target.value)}
-                  className="h-11 w-full rounded-xl border border-ink-200 px-3 text-sm outline-none focus:border-brand-500"
                   maxLength={120}
                 />
-                <button
-                  onClick={handleSaveTitle}
-                  disabled={savingTitle}
-                  className="h-11 cursor-pointer rounded-xl bg-brand-500 px-4 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
-                >
+                <Button variant="brand" onClick={handleSaveTitle} disabled={savingTitle}>
                   {savingTitle ? 'Saving...' : 'Save'}
-                </button>
+                </Button>
               </div>
-            </div>
+            </Card>
 
-            <div className="rounded-2xl border border-ink-100 bg-white p-4 card-shadow">
+            <Card className="!p-4 bg-white">
               <p className="text-sm text-ink-500">Total</p>
               <p className="mt-1 text-3xl font-bold text-ink-800">{stats?.total ?? 0}</p>
-            </div>
+            </Card>
 
-            <div className="rounded-2xl border border-ink-100 bg-white p-4 card-shadow">
+            <Card className="!p-4 bg-white">
               <p className="text-sm text-ink-500">Answered</p>
               <p className="mt-1 text-3xl font-bold text-emerald-700">{stats?.answered ?? 0}</p>
-            </div>
+            </Card>
           </section>
 
-          <section className="mb-6 rounded-2xl border border-ink-100 bg-white p-4 card-shadow">
-            <p className="text-xs font-semibold tracking-wide text-ink-500">Public URL</p>
-            <div className="mt-2 flex flex-col gap-3 sm:flex-row">
-              <input readOnly value={publicBoxURL} className="h-11 w-full rounded-xl border border-ink-200 bg-ink-50 px-3 text-sm text-ink-700" />
-              <button
-                onClick={async () => {
-                  await navigator.clipboard.writeText(publicBoxURL)
-                }}
-                className="h-11 cursor-pointer rounded-xl border border-ink-300 px-4 text-sm font-semibold text-ink-700 transition hover:bg-ink-100"
-              >
-                Copy Link
-              </button>
-            </div>
+          <section className="mb-6">
+            <Card className="!p-4 bg-white">
+              <p className="text-xs font-semibold tracking-wide text-ink-500">Public URL</p>
+              <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+                <Input readOnly value={publicBoxURL} />
+                <Button
+                  variant="outline"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(publicBoxURL)
+                  }}
+                >
+                  Copy Link
+                </Button>
+              </div>
+            </Card>
           </section>
 
           <section className="space-y-4">
             {questions.map((question) => (
-              <article key={question.id} className="rounded-2xl border border-ink-100 bg-white p-5 card-shadow">
+              <Card key={question.id} className="!p-5 bg-white">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-ink-800">{question.anonymous_name}</p>
                   <div className="flex items-center gap-2 text-xs">
@@ -235,7 +236,7 @@ export default function InboxPage() {
 
                 <div className="mt-4">
                   <label className="text-xs font-semibold tracking-wide text-ink-500">Answer</label>
-                  <textarea
+                  <Textarea
                     value={draftAnswers[question.id] ?? ''}
                     onChange={(e) =>
                       setDraftAnswers((prev) => ({
@@ -243,7 +244,7 @@ export default function InboxPage() {
                         [question.id]: e.target.value,
                       }))
                     }
-                    className="mt-2 h-28 w-full resize-none rounded-xl border border-ink-200 px-3 py-2 text-sm outline-none focus:border-brand-500"
+                    rows={4}
                     placeholder="Leave empty and save if you want this to stay pending."
                   />
                 </div>
@@ -278,27 +279,24 @@ export default function InboxPage() {
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <button
+                  <Button
+                    variant="dark"
                     onClick={() => handleSaveQuestion(question.id)}
                     disabled={savingQuestionId === question.id}
-                    className="h-10 cursor-pointer rounded-xl bg-ink-800 px-4 text-sm font-semibold text-white transition hover:bg-ink-700 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {savingQuestionId === question.id ? 'Saving...' : 'Save Answer + Color'}
-                  </button>
-                  <button
-                    onClick={() => handleDeleteQuestion(question.id)}
-                    className="h-10 cursor-pointer rounded-xl border border-red-200 px-4 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-                  >
+                  </Button>
+                  <Button variant="danger" onClick={() => handleDeleteQuestion(question.id)}>
                     Delete
-                  </button>
+                  </Button>
                 </div>
-              </article>
+              </Card>
             ))}
 
             {questions.length === 0 && (
-              <div className="rounded-2xl border border-ink-100 bg-white p-8 text-center text-sm text-ink-500 card-shadow">
+              <Card className="!p-8 bg-white text-center text-sm text-ink-500">
                 Your inbox is empty. Share your public link to start receiving questions.
-              </div>
+              </Card>
             )}
           </section>
         </>

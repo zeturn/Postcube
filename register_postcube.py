@@ -8,8 +8,8 @@ BASE_URL = os.getenv("BASALT_BASE_URL", "http://localhost:8101")
 API_BASE = f"{BASE_URL}/api/v1/manual"
 API_KEY = os.getenv("BASALT_API_KEY", "").strip()
 
-FRONTEND_URL = os.getenv("POSTCUBE_FRONTEND_URL", "http://localhost:5116")
-BACKEND_URL = os.getenv("POSTCUBE_BACKEND_URL", "http://localhost:8113")
+FRONTEND_URL = os.getenv("POSTCUBE_FRONTEND_URL", "http://localhost:5118")
+BACKEND_URL = os.getenv("POSTCUBE_BACKEND_URL", "http://localhost:8116")
 CALLBACK_URL = f"{BACKEND_URL}/api/auth/callback"
 
 if not API_KEY:
